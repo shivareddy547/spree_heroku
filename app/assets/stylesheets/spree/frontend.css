@@ -1,0 +1,8 @@
+/*
+* This is a manifest file that includes stylesheets for spree_frontend 
+ *= require normalize
+ *= require skeleton
+ *= require spree/frontend/screen
+ *= require spree/frontend/jquery.nouislider.min
+ *= require spree/frontend/slider/jquery-ui-1.10.4.custom
+*/

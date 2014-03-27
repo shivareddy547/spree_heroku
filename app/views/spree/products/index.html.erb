@@ -1,0 +1,334 @@
+
+
+<% content_for :sidebar do %>
+
+  <div data-hook="homepage_sidebar_navigation">
+   <div class="sss">
+<h6 class="taxonomy-root">Shop b</h6>
+<br>
+<a href="javascript:void(0)" class="low-to-high" title="" >Low TO High</a><br>
+<a href="javascript:void(0)" class="high-to-low" title="" >High TO Low</a>
+</div>
+
+       <%= render :partial => 'spree/shared/taxonomies' %>
+      <%= render :partial => 'spree/shared/filters' %>
+
+  
+  </div>
+<% end %>
+
+
+<% if params[:keywords] %>
+
+  <div data-hook="search_results">
+    <% if @products.empty? %>
+      <h6 class="search-results-title"><%= Spree.t(:no_products_found) %></h6>
+    <% else %>
+      <%= render :partial => 'spree/shared/products', :locals => { :products => @products, :taxon => @taxon } %>
+    <% end %>
+   
+  </div>
+
+<% else %>
+
+  <div data-hook="homepage_products">
+    <%= render :partial => 'spree/shared/products', :locals => { :products => @products, :taxon => @taxon } %>
+  </div>
+<% end %>
+
+<div class="loading" style="background: url(http://partner.finline.com.ua/static/i/wgt/loading_spinner.gif) no-repeat; display:inline-block; width:70px; height:30px; padding-left:25px;display:none;position: relative;left:310px"> </div>
+<div id = "loadMore_div" style="background-color:orange;text-align:center;display:none">
+  <div id="loadMore">Load more</div>
+</div></br>
+<div id="showLess_div" style="background-color:orange;text-align:center;display:none">
+  <div id="showLess">Show less</div>
+</div>
+
+
+<% if params[:search].present? %>
+<a href="javascript:void(0)" class="keywords" title="<%= params[:keywords] rescue nil%>" ></a>
+<a href="javascript:void(0)" class="search_brand_any" title="<%= params[:search][:brand_any] %>" ></a>
+<a href="javascript:void(0)" class="search_price_any" title= "<%= params[:search][:price_range_any] %>"></a>
+<a href="javascript:void(0)" class="id" title="<%= params[:id] %>" ></a>
+<%end %>
+
+
+<script>
+
+
+
+
+
+
+
+
+$(document).ready(function() {
+ var params = "#{<%= params %>}";
+var keywords = $('.keywords').attr("title");
+
+var search_brand_any = $('.search_brand_any').attr("title");
+
+var search_price_any = $('.search_price_any').attr("title");
+
+
+var id = $('.id').attr("title");
+
+var taxon_category_ids = "<%= @taxon_category_ids %>"
+$(".taxon_class").on("click",function(){
+//alert("hello");
+
+ //var href = $(this).val();
+  var href = $(this).attr("href");
+ //alert(href);
+
+$.ajax({
+  url: href,
+  data: id,
+  
+    success: function(result){
+
+       //alert(result);  
+       window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", href);
+
+        $('#wrapper').replaceWith(result);  
+
+      }
+  })
+
+
+});
+
+
+
+
+$(".remove_taxon").on("click",function(){
+//alert("hello");
+
+ //var href = $(this).val();
+  var href = $(this).attr("href");
+ //alert(href);
+
+$.ajax({
+  url: href,
+  data: id,
+  
+    success: function(result){
+
+       //alert(result);  
+       window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", href);
+
+        $('#wrapper').replaceWith(result);  
+
+      }
+  })
+
+
+});
+
+
+$(".low-to-high").on("click",function(){
+
+
+ var value = $(this).val();
+ // alert(value);
+  //alert(value);
+//alert(params);
+var id ="<%= params[:id] %>"
+var keywords = "<%= params[:keywords] %>"
+//alert(value);
+var url = "/products?utf8=✓&search[price_range_array_any]=" + value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[brand_any]=" + search_brand_any + "&low_to_high="  + "low_to_high"
+  $.ajax({
+                
+                url:"/products?utf8=✓&search[price_range_array_any]=" + value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[brand_any]=" + search_brand_any + "&low_to_high="  + "low_to_high",
+                data: params,                            
+                success: function(result)
+                {                    
+                   // alert("sucecc")
+                    //window.location.assign(url);
+window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
+ $('#wrapper').replaceWith(result);  
+
+
+
+                }, 
+                error: function()
+                {
+                   // alert("error");
+                }
+            });
+
+  });
+
+
+
+$(".high-to-low").on("click",function(){
+
+
+ var value = $(this).val();
+ // alert(value);
+  //alert(value);
+//alert(params);
+var id ="<%= params[:id] %>"
+var keywords = "<%= params[:keywords] %>"
+//alert(value);
+var url = "/products?utf8=✓&search[price_range_array_any]=" + value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[brand_any]=" + search_brand_any + "&high_to_low="  + "high_to_low"
+  $.ajax({
+                
+                url:"/products?utf8=✓&search[price_range_array_any]=" + value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[brand_any]=" + search_brand_any + "&high_to_low="  + "high_to_low",
+                data: params,                            
+                success: function(result)
+                {                    
+                   // alert("sucecc")
+                    //window.location.assign(url);
+window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
+ $('#wrapper').replaceWith(result);  
+
+
+
+                }, 
+                error: function()
+                {
+                   // alert("error");
+                }
+            });
+
+  });
+
+
+
+
+
+});
+
+
+$(document).ready(function() {
+    $('a[disabled=disabled]').click(function(event){
+     // alert("yes");
+        event.preventDefault(); // Prevent link from following its href
+    });
+
+
+var Link = $.noUiSlider.Link;
+var min = '<%= @minimum %>';
+var max = '<%= @maximum %>';
+var min_price = '<%= @minimum_price.to_i %>';
+var max_price = '<%= @maximum_price.to_i %>';
+ 
+//$("#pice_slider").val( [min,max] );
+if (min) 
+{
+$("#pice_slider").noUiSlider({
+  start: [min, max],
+  connect: true,
+  range: {
+    'min': parseInt(min_price),
+    'max': parseInt(max_price)
+  },
+  serialization: {
+    lower: [
+      new Link({
+        target: $('.min'),
+        
+      // The select element wont show
+      // any decimals
+        format: {
+          decimals: 0
+        }
+      })
+    ],
+    upper: [
+      new Link({
+        target: $('.max')
+      })
+    ]
+  }
+});
+
+}
+else
+{
+$('#pice_slider').noUiSlider({
+  start: [min_price, max_price],
+  connect: true,
+  range: {
+    'min': parseInt(min_price),
+    'max': parseInt(max_price)
+  }
+  ,serialization: {
+    lower: [
+      new Link({
+        target: $('.min'),
+        
+      // The select element wont show
+      // any decimals
+        format: {
+          decimals: 0
+        }
+      })
+    ],
+    upper: [
+      new Link({
+        target: $('.max')
+      })
+    ]
+  }
+});
+}
+
+
+
+});
+
+
+
+
+$(document).ready(function () {
+    size_li = $("#products li").size();
+    x=6;
+    var products_count = "<%= @products_count %>"
+    //alert(products_count)
+if (products_count != 0)
+{
+
+ $('#loadMore_div').show();
+  $('#showLess_div').show();
+}
+
+    y=parseInt(products_count) 
+    $('#products li:lt('+y+')').hide();
+   
+    $('#products li:lt('+x+')').show();
+    $('#loadMore').click(function () {
+      //alert("show")
+     $('.loading').show();
+        x= (x+6 <= size_li) ? x+6 : size_li;
+        setTimeout( "$('.loading').hide();$('#products li:lt('+x+')').show(); ", 700)
+        //$('#products li:lt('+x+')').show();
+         $('#showLess').show();
+        if(x == size_li){
+            $('#loadMore').hide();
+        }
+    });
+    $('#showLess').click(function () {
+        x=(x-6<0) ? 6 : x-6;
+        $('#products li').not(':lt('+x+')').hide();
+        $('#loadMore').show();
+         $('#showLess').show();
+        if(x == 6){
+            $('#showLess').hide();
+        }
+    });
+
+
+
+
+
+});
+
+
+
+</script>
+
+
+
+
