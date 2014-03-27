@@ -12,7 +12,7 @@ development:
   adapter: mysql2
   encoding: utf8
   reconnect: false
-  database: spree_development
+  database: spree_stable_development
   pool: 5
   username: root
   password: root
@@ -25,7 +25,7 @@ test:
   adapter: mysql2
   encoding: utf8
   reconnect: false
-  database: spree_test
+  database: spree17_03_test
   pool: 5
   username: root
   password: root
@@ -35,8 +35,9 @@ production:
   adapter: mysql2
   encoding: utf8
   reconnect: false
-  database: spree_production
+  database: spree17_03_production
   pool: 5
   username: root
   password: root
   socket: /var/run/mysqld/mysqld.sock
+#spree1_production
