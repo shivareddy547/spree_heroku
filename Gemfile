@@ -38,6 +38,8 @@ gem 'spree', :git => 'https://github.com/spree/spree.git', :branch => '2-2-stabl
 gem 'spree_auth_devise', :git => 'http://github.com/spree/spree_auth_devise', :branch => '2-2-stable'
 gem 'sunspot_rails'
 gem 'sunspot_solr'
+gem 'heroku-rake'
+gem 'thread_safe', '0.2.0'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
