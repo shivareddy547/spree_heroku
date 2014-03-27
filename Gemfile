@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gem 'rails', '4.0.3'
 
 # Use sqlite3 as the database for Active Record
-gem 'mysql2'
+#gem 'mysql2'
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0'
@@ -40,7 +40,7 @@ gem 'sunspot_rails'
 gem 'sunspot_solr'
 gem 'heroku-rake'
 gem 'thread_safe', '0.2.0'
-
+ gem 'pg'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
 
