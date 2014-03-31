@@ -285,6 +285,7 @@ end
 
 
 
+
 @searcher = Spree::Product.solr_search do
 
 if params[:search].present?
@@ -315,8 +316,11 @@ any_of do
 #with(:tax_category,params[:search_params])
 with(:taxon_ids).all_of(session[:sunspot_search])
 #with(:taxon_ids,params[:search_params])
-end
 
+end
+with(:variant_ids).all_of(params[:search][:variant].split(",").map(&:to_i)) if params[:search][:variant].present?
+
+with(:product_properties_ids).any_of(params[:search][:product_property].split(",").map(&:to_i)) if params[:search][:product_property].present?
 fulltext params[:keywords]
 if params[:low_to_high].present?
 order_by(:price, :asc) 

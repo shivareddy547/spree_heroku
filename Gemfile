@@ -17,7 +17,7 @@ gem 'coffee-rails', '~> 4.0.0'
 
 # See https://github.com/sstephenson/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
-
+ruby '2.0.0'
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 
@@ -31,7 +31,7 @@ group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.
   gem 'sdoc', require: false
 end
-
+gem 'rails_12factor', group: :production
 
 gem 'spree', :git => 'https://github.com/spree/spree.git', :branch => '2-2-stable'
 

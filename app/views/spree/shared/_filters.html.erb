@@ -77,12 +77,71 @@ $<input type="text" name="fname" id="second" value="<%= @maximum %>">-->
 
             </li>
           <% end %>
+ 
+
         </ul>
       </div>
     <% end %>
+<ul>
+  <h6 class="filter-title"> Sizes & Colors </h6>
+     <% Spree::OptionValue.all.each do |option_value| %>
+<li class="nowrap">
+  <%#= params[:search][:variant].inspect rescue nil%>
+              <input type="checkbox"
+                     id="<%= option_value.id %>"
+                     class = "variants_filter"
+                     name="search[variant][]"
+                     value="<%= option_value.id %>"
+                     
+                     <%= params[:search][:variant] && params[:search][:variant].include?(option_value.id.to_s) ? "checked" : "" %> />
+              <label class="nowrap" for="<%= option_value.id %>"> <%= option_value.presentation %> </label>
+
+</li>
+<% end %>
+</ul>
+<ul>
+  <h6 class="filter-title"> Gender Properties </h6>
+  <%#= params[:search][:product_property].inspect rescue nil%>
+     <%  Spree::ProductProperty.group(:value).each do |product_property| %>
+
+     <% if product_property.value=="Men's"   %>
+<li class="nowrap">
+  
+              <input type="checkbox"
+                     id="<%= Spree::ProductProperty.where(:value=>"Men's").map(&:id)*"," %>"
+                     class = "product_property_filter"
+                     name="search[product_property][]"
+                     value="<%= product_property.id %>"
+                     
+                     <%= params[:search][:product_property] && params[:search][:product_property].include?(Spree::ProductProperty.where(:value=>"Men's").map(&:id)*",") ? "checked" : "" %> />
+              <label class="nowrap" for="<%= product_property.id %>"> <%= product_property.value %> </label>
+
+</li>
+<% elsif product_property.value =="Women's" %>
+
+<li class="nowrap">
+  <%#= params[:search][:variant].inspect rescue nil%>
+              <input type="checkbox"
+                     id="<%= Spree::ProductProperty.where(:value=>"Women's").map(&:id)*"," %>"
+                     class = "product_property_filter"
+                     name="search[product_property][]"
+                     value="<%= product_property.id %>"
+                     
+                     <%= params[:search][:product_property] && params[:search][:product_property].include?(Spree::ProductProperty.where(:value=>"Women's").map(&:id)*",") ? "checked" : "" %> />
+              <label class="nowrap" for="<%= product_property.id %>"> <%= product_property.value %> </label>
+
+</li>
+
+<% end %>
+<% end %>
+</ul>
+
     <%#= submit_tag Spree.t(:search), :name => nil %>
   <% end %>
+
+
 <% end %>
+
 <a href="javascript:void(0)" class="id" title="<%= params[:id] %>" ></a>
 
 
@@ -320,6 +379,97 @@ window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
 
 
 });
+
+
+
+
+$(".variants_filter").on("click",function(){
+//alert("hello");
+var inputs = document.getElementsByTagName("input"); 
+var checks = [];
+for (var i = 0; i < inputs.length; i++) {  
+  if (inputs[i].class == "variants_filter" && inputs[i].type == "checkbox" && inputs[i].checked) { 
+  //alert(inputs[i].value); 
+    checks.push(inputs[i].id);  
+  }  
+}  
+//alert("check");
+//alert(checks);
+
+  // checked
+
+ var value = $(this).val();
+
+var id ="<%= params[:id] %>"
+var keywords = "<%= params[:keywords] %>"
+var url = "/products?utf8=✓&search[variant]=" + checks  + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider
+  $.ajax({
+                
+                url: "/products?utf8=✓&search[variant]=" + checks  + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider ,
+                data: params,                            
+                success: function(result)
+                {      
+
+                window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
+              
+                  //  alert("sucecc")
+                   // window.location.assign(url);
+                      $('#wrapper').replaceWith(result);  
+
+                }, 
+                error: function()
+                {
+                  //  alert("error");
+                }
+            });
+
+});
+
+$(".product_property_filter").on("click",function(){
+//alert("hello");
+//alert("hi")
+var class_name = getElementsByClassName("product_property_filter");
+var inputs = class_name.getElementsByTagName("input"); 
+var checks = [];
+for (var i = 0; i < inputs.length; i++) {  
+  if (inputs[i].class == "product_property_filter" && inputs[i].type == "checkbox" && inputs[i].checked) { 
+  //alert(inputs[i].value); 
+    checks.push(inputs[i].id);  
+  }  
+}  
+//alert("check");
+//alert(checks);
+
+  // checked
+
+ //var value = $(this).val();
+
+var id ="<%= params[:id] %>"
+var keywords = "<%= params[:keywords] %>"
+var url = "/products?utf8=✓&search[product_property]=" + checks  + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider
+  $.ajax({
+                
+                url: "/products?utf8=✓&search[product_property]=" + checks  + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider ,
+                data: params,                            
+                success: function(result)
+                {      
+
+                window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
+              
+                  //  alert("sucecc")
+                   // window.location.assign(url);
+                      $('#wrapper').replaceWith(result);  
+
+                }, 
+                error: function()
+                {
+                  //  alert("error");
+                }
+            });
+
+});
+
+
 
 
 $('#pice_slider').change(function(){

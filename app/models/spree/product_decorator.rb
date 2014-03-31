@@ -17,6 +17,17 @@ text :taxon do
   integer :taxon_ids, multiple: true do
   taxons.map(&:id)
 end
+integer :product_properties_ids, multiple: true do
+  product_properties.map(&:id)
+end
+  integer :variant_ids,multiple: true do
+    #variants
+    #variants.map{}
+    variants.map{|n| n.option_values.map(&:id).flatten }.flatten
+
+  end
+
+
 end
 
  end
