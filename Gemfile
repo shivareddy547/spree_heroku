@@ -44,7 +44,7 @@ gem 'thread_safe', '0.2.0'
  group :production do
     gem 'pg'
 end
-gem 'heroku'
+#gem 'heroku'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
 
