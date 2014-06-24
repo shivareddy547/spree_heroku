@@ -1,13 +1,4 @@
-<% @taxon_categories && @taxon_categories.each do |tax_cat| %>
 
-<%if @taxon_categories.count == 1 %>
-<%= link_to "#{tax_cat.name} remove", "/products?remove_id=#{params[:id]}&tax_cat_id=#{tax_cat.id}&keywords=#{params[:keywords]}&search[price_with_slider]=#{params[:search][:price_with_slider] rescue nil}&low_to_high=#{params[:low_to_high] rescue nil}&high_to_low=#{params[:high_to_low] rescue nil}", :class=>"remove_taxon",:disabled=>true %></br>
-<% else %>
-<%= link_to "#{tax_cat.name} remove", "/products?id=#{params[:id]}&tax_cat_id=#{tax_cat.id}&keywords=#{params[:keywords]}&search[price_with_slider]=#{params[:search][:price_with_slider] rescue nil}&low_to_high=#{params[:low_to_high] rescue nil}&high_to_low=#{params[:high_to_low] rescue nil}" ,:class=>"remove_taxon",:disabled=>true%></br>
-
-<% end %>
-
-<% end %>
 <% max_level = Spree::Config[:max_level_in_taxons_menu] || 1 %>
 <nav id="taxonomies" class="sidebar-item" data-hook>
   <% @taxonomies.each do |taxonomy| %>
@@ -17,3 +8,11 @@
     <% end %>
   <% end %>
 </nav>
+
+
+
+<script>
+
+
+
+</script>

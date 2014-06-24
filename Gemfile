@@ -44,6 +44,13 @@ gem 'thread_safe', '0.2.0'
  group :production do
     gem 'pg'
 end
+gem "therubyracer"
+gem "less-rails"
+gem "twitter-bootstrap-rails"
+
+#gem 'spree_ajax_add_to_cart', :git => 'http://github.com/joneslee85/spree_ajax_add_to_cart.git'
+#gem 'spree_ajax_cart', :git => 'http://github.com/pogodan/spree_ajax_cart'
+#gem 'spree_ajax_add_to_cart' , :git => 'http://github.com/suryart/spree_ajax_add_to_cart.git',:branch=>'master'
 #gem 'heroku'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
@@ -56,3 +63,9 @@ end
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
+#gem 'spree_fancy',  'spree/spree_fancy', :branch => '1-3-stable'
+#gem 'spree_fancy', :git => 'https://github.com/spree/spree_fancy.git', :branch => '2-2-stable'
+#gem "spree_product_zoom", :git => "git://github.com/spree/spree_product_zoom.git"
+#gem 'spree_product_zoom', :git => 'https://github.com/spree/spree_product_zoom.git'
+#gem 'spree_imagezoom', :git => 'https://github.com/kunalchaudhari/spree_imagezoom.git'
+#gem "spree_magiczoomplus", :git => 'http://github.com/hnprashanth/spree-magiczoomplus.git'

@@ -5,4 +5,9 @@
  *= require spree/frontend/screen
  *= require spree/frontend/jquery.nouislider.min
  *= require spree/frontend/slider/jquery-ui-1.10.4.custom
+ *= require spree/frontend/zoom/magiczoomplus
+ *= require spree/frontend/zoom/magiczoom
+ *= require spree/frontend/semantic/semantic
+
+
 */

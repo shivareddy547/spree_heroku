@@ -1,6 +1,14 @@
 
 Spree::ProductsController.class_eval do
 
+#layout 'spree/layouts/spree_application',:only => "index"
+
+def semantic_layout
+
+respond_to do |format|
+      format.html {render :layout => 'semantic'}
+    end
+end
 
  def index
 
@@ -273,8 +281,8 @@ if params[:search] && params[:search][:brand_any].present?
 session[:sunpot_brand_any_array]
 end
 
-@minimum_price = Spree::Product.all.sort_by(&:price).first.price.to_i
-@maximum_price = Spree::Product.all.sort_by(&:price).reverse.first.price.to_i
+#@minimum_price = Spree::Product.all.sort_by(&:price).first.price.to_i
+#@maximum_price = Spree::Product.all.sort_by(&:price).reverse.first.price.to_i
 
 if params[:search].present?
 @minimum = params[:search][:price_with_slider].split(',')[0] if params[:search][:price_with_slider].present?
@@ -284,14 +292,63 @@ price_params = params[:search][:price_with_slider].split(',') if params[:search]
 end
 
 
+if params[:search].present?
+if params[:search][:category_filter].present? && params[:children].present?
+
+params_filter = params[:search][:category_filter].split(",").map(&:to_i)
+children_filter = params[:children].split(",").map(&:to_i)
+p "++++++++++++++"
+p params_filter = params_filter - children_filter
+
+p children_filter
+p "++++++++++="
+else
+  children_filter = ''
+  params[:children]= ''
+
+end
 
 
+end
+
+
+if params[:search].present?
+if params[:search][:category_filter].present? && params[:children].present?
+
+params_filter = params[:search][:category_filter].split(",").map(&:to_i)
+children_filter = params[:children].split(",").map(&:to_i)
+p "++++++++++++++"
+p params_filter = params_filter - children_filter
+
+p children_filter
+p "++++++++++="
+
+elsif params[:search][:category_filter].present? && params[:children_params].present?
+  
+params_filter = params[:search][:category_filter].split(",").map(&:to_i)
+children_filter = params[:children_params].split(",").map(&:to_i)
+params_filter = params_filter - children_filter
+
+else
+params_filter = params[:search][:category_filter].split(",").map(&:to_i) if params[:search][:category_filter].present?
+children_filter = params[:children].split(",").map(&:to_i) if params[:children].present?
+
+end
+
+
+end
+
+
+#children_params = params[:search][:category_filter]
+if  params[:search] &&  params[:search][:brand_any]
+params[:search][:brand_any] = session[:sunpot_brand_any_array]
+end
 @searcher = Spree::Product.solr_search do
 
 if params[:search].present?
 
-  if session[:sunpot_brand_any_array].present?
-fulltext session[:sunpot_brand_any_array]
+  if params[:search][:brand_array_any].present?
+fulltext params[:search][:brand_array_any].gsub(/\,/," ")
 else
  #fulltext params[:id].split('/').last
   end
@@ -312,10 +369,13 @@ end
 
 
 
-any_of do
+all_of do
 #with(:tax_category,params[:search_params])
-with(:taxon_ids).all_of(session[:sunspot_search])
+with(:taxon_ids).all_of(params_filter) if params_filter.present?
 #with(:taxon_ids,params[:search_params])
+#with(:taxon_ids).any_of(params[:children_params].split(",").map(&:to_i)) if params[:children_params].present?
+with(:taxon_ids).any_of(children_filter) if children_filter.present?
+
 
 end
 with(:variant_ids).all_of(params[:search][:variant].split(",").map(&:to_i)) if params[:search][:variant].present?
@@ -371,7 +431,13 @@ p "+====="
 
  if request.xhr?
         #render :partial => "spree/shared/products",:locals=> {:products => @products}
- render  "spree/products/index",:layout=>"spree/layouts/custom_layout",:minimum => @minimum,:maximum=>@maximum
+ render  "spree/products/semantic_products.html.erb",:layout=>false,:minimum => @minimum,:maximum=>@maximum
+  
+else
+respond_to do |format|
+      format.html {render :layout => 'spree/layouts/semantic_layout'}
+    end
+
   end
 
     # @searcher = build_searcher(params)

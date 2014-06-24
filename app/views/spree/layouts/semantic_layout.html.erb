@@ -1,0 +1,86 @@
+<!doctype html>
+<!--[if lt IE 7 ]> <html class="ie ie6" lang="<%= I18n.locale %>"> <![endif]-->
+<!--[if IE 7 ]>    <html class="ie ie7" lang="<%= I18n.locale %>"> <![endif]-->
+<!--[if IE 8 ]>    <html class="ie ie8" lang="<%= I18n.locale %>"> <![endif]-->
+<!--[if IE 9 ]>    <html class="ie ie9" lang="<%= I18n.locale %>"> <![endif]-->
+<!--[if gt IE 9]><!--><html lang="<%= I18n.locale %>"><!--<![endif]-->
+  <head data-hook="inside_head">
+  <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Open+Sans:300italic,400,300,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" type="text/css" href="/assets/spree/frontend/semantic/packaged/css/semantic.css">
+  <link rel="stylesheet" type="text/css" href="/assets/spree/frontend/semantic/homepage.css">
+
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"></script>
+  <script src="/assets/spree/frontend/semantic/packaged/javascript/semantic.js"></script>
+  <script src="/assets/spree/frontend/semantic/homepage.js"></script>
+
+
+
+<link href="http://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="/assets/spree/frontend/zoom/style.css" media="all" />
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.js"></script>
+<script type="text/javascript" src="/assets/spree/frontend/zoom/simple_new_zoom.js"></script>
+  
+  <script src="/assets/spree/frontend/zoom/semantic.js"></script>
+    <script src="/assets/spree/frontend/zoom/homepage.js"></script>
+<script type="text/javascript" src="/assets/spree/frontend/evolve_zoom/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="/assets/spree/frontend/evolve_zoom/jquery.elevatezoom.js"></script>
+
+<script src="/assets/spree.js?body=1"></script>
+<script src="/assets/jquery.payment.js?body=1"></script>
+<script src="/assets/spree/frontend/checkout.js?body=1"></script>
+<script src="/assets/spree/frontend/checkout/address.js?body=1"></script>
+<script src="/assets/spree/frontend/checkout/payment.js?body=1"></script>
+<script src="/assets/spree/frontend/product.js?body=1"></script>
+<script src="/assets/spree/frontend/cart.js?body=1"></script>
+
+<!--[if lt IE 9]>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6/html5shiv.min.js"></script>
+<![endif]-->
+<script>
+  if (Spree === undefined) {
+    var Spree = {}
+  }
+  if (Spree.routes == undefined) {
+    Spree.routes = {}
+  }
+  Spree.routes.states_search = "/api/states"
+  Spree.routes.apply_coupon_code = function(order_id) {
+    return "/api/orders/" + order_id + "/apply_coupon_code"
+  }
+  Spree.routes.root = "http://localhost:3000/"
+</script>
+
+<script>
+Spree.routes.cart_link = "http://localhost:3000/cart_link"
+</script>
+
+
+
+
+
+
+  </head>
+  <body class="<%= body_class %>" id="<%= @body_id || 'default' %>" data-hook="body">
+
+    <div class="container">
+
+      <%#= render :partial => 'spree/shared/header' %>
+
+      
+
+        <%= yield %>
+
+
+      <%#= render :partial => 'spree/shared/footer' %>
+
+    </div>
+
+  
+  </body>
+
+
+
+</html>

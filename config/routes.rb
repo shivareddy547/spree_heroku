@@ -1,4 +1,5 @@
 SpreeStable22::Application.routes.draw do
+ root to: 'spree/products#index'
 
   # This line mounts Spree's routes at the root of your application.
   # This means, any requests to URLs such as /products, will go to Spree::ProductsController.
@@ -6,7 +7,7 @@ SpreeStable22::Application.routes.draw do
   #
   # We ask that you don't use the :as option here, as Spree relies on it being the default of "spree"
   mount Spree::Core::Engine, :at => '/'
-   root to: 'spree/products#index'
+  
           # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
@@ -14,7 +15,7 @@ SpreeStable22::Application.routes.draw do
   # root 'welcome#index'
 
   # Example of regular route:
-  #   get 'products/:id' => 'catalog#view'
+    get 'spree/products/semantic_layout' => 'spree/products#semantic_layout'
 
   # Example of named route that can be invoked with purchase_url(id: product.id)
   #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase

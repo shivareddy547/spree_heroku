@@ -1,0 +1,26 @@
+
+
+
+
+        <html>
+    <head>
+        <title>CloudZoom Sample</title>
+       
+          <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.1.min.js"></script>
+        <script type="text/javascript" src="/assets/spree/frontend/zoom/cloudzoom.js"></script>
+        <link rel="stylesheet" href="/assets/spree/frontend/zoom/cloudzoom.css" type="text/css">
+          <script type="text/javascript">
+            CloudZoom.quickStart();
+        </script>  
+    </head>
+
+    <body>
+<% @products.each do |product| %>
+
+        <img class = "cloudzoom" src = "<%= product.images[0].attachment.url(:original) rescue nil%>"
+             data-cloudzoom = "zoomImage: '<%= product.images[0].attachment.url(:original) rescue nil%>'" />
+        <% end %>
+
+    </body>
+
+</html>

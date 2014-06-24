@@ -14,3 +14,27 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require_tree .
+
+
+Spree.ready(function($) {
+	alert("yes")
+  if (($('form#update-cart')).is('*')) {
+    ($('form#update-cart a.delete')).show().one('click', function() {
+      ($(this)).parents('.line-item').first().find('input.line_item_quantity').val(0);
+      ($(this)).parents('form').first().submit();
+      return false;
+    });
+  }
+  return ($('form#update-cart')).submit(function() {
+    return ($('form#update-cart #update-button')).attr('disabled', true);
+  });
+});
+
+Spree.fetch_cart = function() {
+  return $.ajax({
+    url: Spree.routes.cart_link,
+    success: function(data) {
+      return $('#link-to-cart').html(data);
+    }
+  });
+};

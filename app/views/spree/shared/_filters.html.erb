@@ -1,37 +1,8 @@
 
 
-<div id="slider" style="position: relative;
-height: 40px;top:10px">
-<div class="info"><%= @products_count %> items
-  <div class="arrow">
-Hello
-
-</div>
-</div>
-</div>
-<div id="pice_slider"></div>
-<%= form_tag "/products?", :method => :get,:id=>"form_slider" do %>
-<div class="label" style="position: relative;
-height: 40px;top:10px">
-<div class="left" style="position: absolute;
-left: 0;top:30;" >$</div>
-<div class="min" style="position: absolute;
-left: 4%;top:30;">
-$<%= @minimum_price %></div>
-<div class="left" style="position: absolute;
-right: 15%;top:30;" >$</div>
-<div class="max" style="position: absolute;
-right: 0;">$<%= @maximum_price %></div>
-
-</div>
-
-
-<!--$<input type="text" name="fname" id="first" value="<%= @minimum %>">
-$<input type="text" name="fname" id="second" value="<%= @maximum %>">-->
-
-  <%#= submit_tag Spree.t(:search), :name => nil %>
-<% end %>
-
+   
+   
+   
 <% @taxon = Spree::Taxon.first %>
 <% filters = @taxon ? @taxon.applicable_filters : [Spree::Core::ProductFilters.all_taxons] %>
 <% unless filters.empty? %>
@@ -39,23 +10,32 @@ $<input type="text" name="fname" id="second" value="<%= @maximum %>">-->
     <% params[:search] ||= {} %>
     <%= hidden_field_tag 'per_page', params[:per_page] %>
     <% filters.each do |filter| %>
+    
+<div class="item">
       <% labels = filter[:labels] || filter[:conds].map {|m,c| [m,m]} %>
       <% next if labels.empty? %>
-      <div class="navigation" data-hook="navigation">
-        <h6 class="filter-title"> 
-          <%if filter[:name]== "Brands" %>
-          <%= filter[:name] %> </h6>
+    
+        <%if filter[:name]== "Brands" %>
+         <a class="active title">
+      <i class="dropdown icon"></i>
+          <%= filter[:name] %> 
+          </a>
           <% end %>
-        <ul class="filter_choices">
+    
+
+        <div class="content menu">
+      <div class="grouped inline fields">
           <% i = 0 %>
           <% labels.each do |nm,val| %>
           <% i = i + 1 %>
             <% label = "#{filter[:name]}_#{nm}".gsub(/\s+/,'_') %>
-            
+            <div class="grouped inline fields">
+               <div class="field">
+                 <div class="ui checkbox">
               <%#= filter[:name] %>
 <%if filter[:name]== "Brands" %>
 <%#= params[:search].inspect %>
-<li class="nowrap">
+
               <input type="checkbox"
                      id="<%= label %>"
                      class = "brand_filter"
@@ -75,12 +55,17 @@ $<input type="text" name="fname" id="second" value="<%= @maximum %>">-->
               <label class="nowrap" for="<%= label %>"> <%= nm %> </label>-->
 <% end %>
 
-            </li>
+            
+          </div>
+        </div>
+      </div>
           <% end %>
  
 
-        </ul>
-      </div>
+         </div>
+
+    </div>
+    
     <% end %>
 <ul>
   <h6 class="filter-title"> Sizes & Colors </h6>
@@ -90,7 +75,7 @@ $<input type="text" name="fname" id="second" value="<%= @maximum %>">-->
               <input type="checkbox"
                      id="<%= option_value.id %>"
                      class = "variants_filter"
-                     name="search[variant][]"
+                     name="variants_filter"
                      value="<%= option_value.id %>"
                      
                      <%= params[:search][:variant] && params[:search][:variant].include?(option_value.id.to_s) ? "checked" : "" %> />
@@ -110,7 +95,7 @@ $<input type="text" name="fname" id="second" value="<%= @maximum %>">-->
               <input type="checkbox"
                      id="<%= Spree::ProductProperty.where(:value=>"Men's").map(&:id)*"," %>"
                      class = "product_property_filter"
-                     name="search[product_property][]"
+                     name="product_property_filter"
                      value="<%= product_property.id %>"
                      
                      <%= params[:search][:product_property] && params[:search][:product_property].include?(Spree::ProductProperty.where(:value=>"Men's").map(&:id)*",") ? "checked" : "" %> />
@@ -124,7 +109,7 @@ $<input type="text" name="fname" id="second" value="<%= @maximum %>">-->
               <input type="checkbox"
                      id="<%= Spree::ProductProperty.where(:value=>"Women's").map(&:id)*"," %>"
                      class = "product_property_filter"
-                     name="search[product_property][]"
+                     name="product_property_filter"
                      value="<%= product_property.id %>"
                      
                      <%= params[:search][:product_property] && params[:search][:product_property].include?(Spree::ProductProperty.where(:value=>"Women's").map(&:id)*",") ? "checked" : "" %> />
@@ -142,8 +127,10 @@ $<input type="text" name="fname" id="second" value="<%= @maximum %>">-->
 
 <% end %>
 
-<a href="javascript:void(0)" class="id" title="<%= params[:id] %>" ></a>
+</div>
 
+<a href="javascript:void(0)" class="id" title="<%= params[:id] %>" ></a>
+<a href="javascript:void(0)" class="children_params" title="<%= params[:children] %>" ></a>
 
 
       <script type="text/javascript">
@@ -155,6 +142,9 @@ var keywords = "<%= params[:keywords] %>";
 var search_brand_any = "<%= params[:search][:brand_any] %>";
 
 var search_price_any = "<%= params[:search][:price_range_any] %>";
+var product_property= "<%= params[:search][:product_property] rescue nil%>"
+var price_with_slider = "<%= params[:search][:price_with_slider] %>"
+var variant= "<%= params[:search][:variant] rescue nil%>"
 
 
 var params = "#{<%= params %>}";
@@ -183,11 +173,11 @@ var second = $("#second").val();
 var id ="<%= params[:id] %>"
 var keywords = "<%= params[:keywords] %>"
 //alert(value);
-var url = "/products?utf8=✓&search[price_with_slider]=" + value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any
+var url = "/products?utf8=✓&search[price_with_slider]=" + value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any + "&search[variant]=" + variant + "&search[product_property]=" + product_property
 
   $.ajax({
                 
-                url: "/products?utf8=✓&search[price_with_slider]="+ value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any  ,
+                url: "/products?utf8=✓&search[price_with_slider]="+ value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any + "&search[variant]=" + variant + "&search[product_property]=" + product_property  ,
                 data: params,                            
                 success: function(result)
                 {                    
@@ -233,11 +223,12 @@ var keywords = "<%= params[:keywords] %>";
 var search_brand_any = "<%= params[:search][:brand_any] %>";
 
 var search_price_any = "<%= params[:search][:price_range_any] %>";
-
-
-var params = "#{<%= params %>}";
-
-var params = "#{<%= params %>}";
+var product_property= "<%= params[:search][:product_property] rescue nil%>"
+var price_with_slider = "<%= params[:search][:price_with_slider] %>"
+var variant= "<%= params[:search][:variant] rescue nil%>"
+var category_filter= "<%= params[:search][:category_filter] rescue nil%>"
+var children='';
+var children_params ="<%= params[:children] %>" ;
 
 var taxon_category_ids = "<%= @taxon_category_ids %>"
 $(".shiva").on("click",function(){
@@ -257,10 +248,10 @@ if($(this).is(':checked'))
 var id ="<%= params[:id] %>"
 var keywords = "<%= params[:keywords] %>"
 //alert(value);
-var url = "/products?utf8=✓&search[price_range_array_any]=" + value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[brand_any]=" + search_brand_any
+var url = "/products?utf8=✓&search[price_range_array_any]=" + value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[brand_any]=" + search_brand_any + "&search[price_with_slider]=" + price_with_slider + "&search[variant]=" + variant + "&search[product_property]=" + product_property
   $.ajax({
                 
-                url:"/products?utf8=✓&search[price_range_array_any]=" + value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[brand_any]=" + search_brand_any,
+                url:"/products?utf8=✓&search[price_range_array_any]=" + value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[brand_any]=" + search_brand_any + "&search[price_with_slider]=" + price_with_slider + "&search[variant]=" + variant + "&search[product_property]=" + product_property,
                 data: params,                            
                 success: function(result)
                 {                    
@@ -292,18 +283,17 @@ else
 //alert(params);
 var id ="<%= params[:id] %>"
 var keywords = "<%= params[:keywords] %>"
-var url = "/products?utf8=✓&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[brand_any]=" + search_brand_any
-
+var url = "/products?utf8=✓&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[brand_any]=" + search_brand_any + "&search[price_with_slider]=" + price_with_slider + "&search[variant]=" + variant + "&search[product_property]=" + product_property
   $.ajax({
                 
-                url: "/products?utf8=✓&search[price_remove_range]=" + value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[brand_any]=" + search_brand_any  ,
+                url: "/products?utf8=✓&search[price_remove_range]=" + value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[brand_any]=" + search_brand_any + "&search[price_with_slider]=" + price_with_slider + "&search[variant]=" + variant + "&search[product_property]=" + product_property  ,
                 data: params,                            
                 success: function(result)
                 {     
                 window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);               
                    // alert("sucecc")
                     //window.location.assign(url);
-                    $('#wrapper').replaceWith(result);  
+                   // $('#wrapper').replaceWith(result);  
 
 //window.history.pushState({"html":response.html,"pageTitle":response.pageTitle},"", url);
                 }, 
@@ -324,14 +314,15 @@ $(".brand_filter").on("click",function(){
 if($(this).is(':checked'))
 {
 
+//alert(children_params);
   var value = $(this).val();
 
 var id ="<%= params[:id] %>"
 var keywords = "<%= params[:keywords] %>"
-var url = "/products?utf8=✓&search[brand_array_any]=" + value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider
+var url = "/products?utf8=✓&search[brand_array_any]=" + value + "&id=" + id + "&keywords=" + keywords + "&search[category_filter]=" + category_filter + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider + "&search[variant]=" + variant + "&search[product_property]=" + product_property + "&children=" + children_params
   $.ajax({
                 
-                url: "/products?utf8=✓&search[brand_array_any]=" + value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider ,
+                url: "/products?utf8=✓&search[brand_array_any]=" + value + "&id=" + id + "&keywords=" + keywords + "&search[category_filter]=" + category_filter + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider + "&search[variant]=" + variant + "&search[product_property]=" + product_property + "&children=" + children_params,
                 data: params,                            
                 success: function(result)
                 {      
@@ -340,7 +331,13 @@ var url = "/products?utf8=✓&search[brand_array_any]=" + value + "&id=" + id + 
               
                   //  alert("sucecc")
                    // window.location.assign(url);
-                      $('#wrapper').replaceWith(result);  
+                      //$('#wrapper').replaceWith(result); 
+                       $('#dimmer_id').show();
+              var intervalId = setInterval(function() {
+    $('#dimmer_id').hide();
+$('#wrapper').replaceWith(result);
+clearInterval(intervalId);
+}, 2000); 
 
                 }, 
                 error: function()
@@ -352,22 +349,32 @@ var url = "/products?utf8=✓&search[brand_array_any]=" + value + "&id=" + id + 
     }  // checked
 else
 {
+
+ children_params = $('.children_params').attr('title');
+ // alert(children_params);
   var value = $(this).val();
+
 var id ="<%= params[:id] %>"
 var keywords = "<%= params[:keywords] %>"
-var url = "/products?utf8=✓&search[brand_remove]=" + value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any  + "&search[price_with_slider]=" + price_with_slider
+var url = "/products?utf8=✓&search[brand_remove]=" + value + "&id=" + id + "&keywords=" + keywords + "&search[category_filter]=" + category_filter + "&search[price_range_any]=" + search_price_any  + "&search[price_with_slider]=" + price_with_slider + "&search[variant]=" + variant + "&search[product_property]=" + product_property + "&children=" + children_params
 
   $.ajax({
                 
-                url: "/products?utf8=✓&search[brand_remove]="+ value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider  ,
+                url: "/products?utf8=✓&search[brand_remove]="+ value + "&id=" + id + "&keywords=" + keywords + "&search[category_filter]=" + category_filter + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider + "&search[variant]=" + variant + "&search[product_property]=" + product_property + "&children=" + children_params ,
                 data: params,                            
                 success: function(result)
                 {                    
                  
                     //window.location.assign(url);
-                     $('#wrapper').replaceWith(result);  
+                     //$('#wrapper').replaceWith(result);  
 
 window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
+ $('#dimmer_id').show();
+              var intervalId = setInterval(function() {
+    $('#dimmer_id').hide();
+$('#wrapper').replaceWith(result);
+clearInterval(intervalId);
+}, 2000);
                 }, 
                 error: function()
                 {
@@ -385,10 +392,12 @@ window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
 
 $(".variants_filter").on("click",function(){
 //alert("hello");
+//alert(children_params);
 var inputs = document.getElementsByTagName("input"); 
 var checks = [];
 for (var i = 0; i < inputs.length; i++) {  
-  if (inputs[i].class == "variants_filter" && inputs[i].type == "checkbox" && inputs[i].checked) { 
+  //alert(inputs[i].name);
+  if (inputs[i].name == "variants_filter" && inputs[i].type == "checkbox" && inputs[i].checked) { 
   //alert(inputs[i].value); 
     checks.push(inputs[i].id);  
   }  
@@ -402,19 +411,26 @@ for (var i = 0; i < inputs.length; i++) {
 
 var id ="<%= params[:id] %>"
 var keywords = "<%= params[:keywords] %>"
-var url = "/products?utf8=✓&search[variant]=" + checks  + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider
+//var product_property= "<%= params[:search][:product_property] rescue nil%>"
+//var variant= "<%= params[:search][:variant] rescue nil%>"
+var url = "/products?utf8=✓&search[variant]=" + checks  + "&id=" + id + "&keywords=" + keywords + "&search[category_filter]=" + category_filter + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider + "&search[product_property]=" + product_property + "&children=" + children_params + "&search[brand_any]=" + search_brand_any 
   $.ajax({
                 
-                url: "/products?utf8=✓&search[variant]=" + checks  + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider ,
+                url: "/products?utf8=✓&search[variant]=" + checks  + "&id=" + id + "&keywords=" + keywords + "&search[category_filter]=" + category_filter  + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider +  "&search[product_property]=" + product_property + "&children=" + children_params + "&search[brand_any]=" + search_brand_any ,
                 data: params,                            
                 success: function(result)
                 {      
 
                 window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
-              
+               $('#dimmer_id').show();
+              var intervalId = setInterval(function() {
+    $('#dimmer_id').hide();
+$('#wrapper').replaceWith(result);
+clearInterval(intervalId);
+}, 2000);
                   //  alert("sucecc")
                    // window.location.assign(url);
-                      $('#wrapper').replaceWith(result);  
+                     // $('#wrapper').replaceWith(result);  
 
                 }, 
                 error: function()
@@ -426,14 +442,17 @@ var url = "/products?utf8=✓&search[variant]=" + checks  + "&id=" + id + "&keyw
 });
 
 $(".product_property_filter").on("click",function(){
+
+//var variant= "<%= params[:search][:variant] rescue nil%>"
+
 //alert("hello");
 //alert("hi")
-var class_name = getElementsByClassName("product_property_filter");
-var inputs = class_name.getElementsByTagName("input"); 
+//var class_name = getElementsByClassName("product_property_filter");
+var inputs = document.getElementsByTagName("input"); 
 var checks = [];
 for (var i = 0; i < inputs.length; i++) {  
-  if (inputs[i].class == "product_property_filter" && inputs[i].type == "checkbox" && inputs[i].checked) { 
-  //alert(inputs[i].value); 
+  if (inputs[i].name == "product_property_filter" && inputs[i].type == "checkbox" && inputs[i].checked) { 
+  //alert(inputs[i].id); 
     checks.push(inputs[i].id);  
   }  
 }  
@@ -446,19 +465,24 @@ for (var i = 0; i < inputs.length; i++) {
 
 var id ="<%= params[:id] %>"
 var keywords = "<%= params[:keywords] %>"
-var url = "/products?utf8=✓&search[product_property]=" + checks  + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider
+var url = "/products?utf8=✓&search[product_property]=" + checks  + "&id=" + id + "&keywords=" + keywords + "&search[category_filter]=" + category_filter + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider + "&search[variant]=" + variant + "&children=" + children_params + "&search[brand_any]=" + search_brand_any 
   $.ajax({
                 
-                url: "/products?utf8=✓&search[product_property]=" + checks  + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider ,
+                url: "/products?utf8=✓&search[product_property]=" + checks  + "&id=" + id + "&keywords=" + keywords + "&search[category_filter]=" + category_filter  + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider + "&search[variant]=" + variant + "&children=" + children_params + "&search[brand_any]=" + search_brand_any  ,
                 data: params,                            
                 success: function(result)
                 {      
 
                 window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
-              
+              $('#dimmer_id').show();
+              var intervalId = setInterval(function() {
+    $('#dimmer_id').hide();
+$('#wrapper').replaceWith(result);
+clearInterval(intervalId);
+}, 2000);
                   //  alert("sucecc")
                    // window.location.assign(url);
-                      $('#wrapper').replaceWith(result);  
+                     // $('#wrapper').replaceWith(result);  
 
                 }, 
                 error: function()
@@ -482,19 +506,25 @@ $('#pice_slider').change(function(){
  var value = $(this).val();
 var id ="<%= params[:id] %>"
 var keywords = "<%= params[:keywords] %>"
-var url = "/products?utf8=✓&search[price_with_slider]=" + value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any
+var url = "/products?utf8=✓&search[price_with_slider]=" + value + "&id=" + id + "&keywords=" + keywords + "&search[category_filter]=" + category_filter  + "&search[price_range_any]=" + search_price_any + "&search[variant]=" + variant + "&search[product_property]=" + product_property + "&children=" + children_params + "&search[brand_any]=" + search_brand_any 
 
   $.ajax({
                 
-                url: "/products?utf8=✓&search[price_with_slider]="+ value + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any  ,
+                url: "/products?utf8=✓&search[price_with_slider]="+ value + "&id=" + id + "&keywords=" + keywords + "&search[category_filter]=" + category_filter  + "&search[price_range_any]=" + search_price_any + "&search[variant]=" + variant + "&search[product_property]=" + product_property + "&children=" + children_params + "&search[brand_any]=" + search_brand_any  ,
                 data: params,                            
                 success: function(result)
                 {                    
                  
                     //window.location.assign(url);
-                     $('#wrapper').replaceWith(result);  
+                     //$('#wrapper').replaceWith(result);  
 
-window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
+          window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
+ $('#dimmer_id').show();
+  var intervalId = setInterval(function() {
+    $('#dimmer_id').hide();
+    $('#wrapper').replaceWith(result);
+    clearInterval(intervalId);
+    }, 2000);
                 }, 
                 error: function()
                 {
@@ -508,6 +538,75 @@ window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
   
 });
 
+
+
+
+$(".category_filter").on("click",function(){
+//alert("hello");
+var inputs = document.getElementsByTagName("input") 
+var checks = [];
+var children='';
+var children_params ="<%= params[:children] %>" ;
+for (var i = 0; i < inputs.length; i++) {  
+ 
+  if (inputs[i].name == "category_name" && inputs[i].type == "checkbox" && inputs[i].checked) { 
+   // alert("enter");
+  
+   // alert("checked");
+    checks.push(inputs[i].value); 
+    var children = inputs[i].placeholder 
+   // alert(children)
+   
+
+   
+  }  
+}  
+//alert("check");
+//alert(checks);
+//alert(search_brand_any);
+
+  // checked
+if(children)
+{
+
+
+}
+ else
+{
+  children = children_params
+}
+
+var id ="<%= params[:id] %>"
+var keywords = "<%= params[:keywords] %>"
+//var product_property= "<%= params[:search][:product_property] rescue nil%>"
+//var variant= "<%= params[:search][:variant] rescue nil%>"
+var url = "/products?utf8=✓&search[category_filter]=" + checks  + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider + "&search[product_property]=" + product_property + "&search[variant]=" + variant + "&children=" + children + "&search[brand_any]=" + search_brand_any 
+  $.ajax({
+                
+                url: "/products?utf8=✓&search[category_filter]=" + checks  + "&id=" + id + "&keywords=" + keywords + "&search_params=" + taxon_category_ids + "&search[price_range_any]=" + search_price_any + "&search[price_with_slider]=" + price_with_slider +  "&search[product_property]=" + product_property + "&search[variant]=" + variant + "&children=" + children + "&search[brand_any]=" + search_brand_any ,
+                data: params,                            
+                success: function(result)
+                {      
+//alert("success");
+                window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
+              $('#dimmer_id').show();
+              var intervalId = setInterval(function() {
+                      $('#dimmer_id').hide();
+                      $('#wrapper').replaceWith(result);
+                      clearInterval(intervalId);
+                      }, 2000);
+                  //  alert("sucecc")
+                   // window.location.assign(url);
+                     // $('#wrapper').replaceWith(result);  
+
+                }, 
+                error: function()
+                {
+                  //  alert("error");
+                }
+            });
+
+});
 
 
 });

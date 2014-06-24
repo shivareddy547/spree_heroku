@@ -1,0 +1,792 @@
+  
+
+<div id="products" >
+  <div class="ui green inverted menu">
+  <a class="item">
+     <%= @products_count %> results found
+  </a>
+  
+</div>
+  <%#= params[:search][:brand_array_any].inspect rescue nil%>
+<div class="ui black huge launch right attached button" style="width: 70px;">
+      <i class="icon list layout"></i>
+      <span class="text" style="display: none;">Sort Menu</span>
+    </div>
+  <div class="ui basic  sidebar vertical accordion menu">
+  
+ <% max_level = Spree::Config[:max_level_in_taxons_menu] || 1 %>
+          <% @taxonomies.each do |taxonomy| %>
+
+<div class="item">
+    <a class="active title">
+      <i class="dropdown icon"></i>
+      <%= taxonomy.name %>
+    </a>
+    
+    <div class="content menu">
+      <div class="ui form item">
+           <% if taxonomy.name=="Categories" %>
+          <%= taxons_tree(taxonomy.root, @taxon, max_level,@products) %>
+          <% else %>
+<%= taxons_tree_brand(taxonomy.root, @taxon, max_level,@products) %>
+          <% end %>
+
+
+         
+      
+      </div>
+    </div>
+   
+  </div>
+ <% end %>
+      
+<% @taxon = Spree::Taxon.first %>
+<% filters = @taxon ? @taxon.applicable_filters : [Spree::Core::ProductFilters.all_taxons] %>
+ <% filters.each do |filter| %>
+ <% labels = filter[:labels] || filter[:conds].map {|m,c| [m,m]} %>
+      <% next if labels.empty? %>
+
+
+
+  <div class="item">
+    <%if filter[:name]== "Brands" %>
+          
+        
+    <a class="active title">
+      <i class="dropdown icon"></i>
+       <%= filter[:name] %>
+    </a>
+      <% end %>
+    <div class="content menu">
+      <div class="ui form item">
+        <div class="grouped inline fields">
+
+
+          <%if filter[:name]== "Brands" %>
+          <% i = 0 %>
+          <% labels.each do |nm,val| %>
+          <% i = i + 1 %>
+            <% label = "#{filter[:name]}_#{nm}".gsub(/\s+/,'_') %>
+          <div class="field">
+            <div class="ui checkbox brand_filter">
+              
+                         <input type="checkbox"
+                     id="<%= label %>"
+                     class = "brand_filter"
+                     name="brand_filter"
+                     value="<%= val %>"
+                     
+                     <%= params[:search][:brand_array_any] && params[:search][:brand_array_any].include?(val.to_s) ? "checked" : "" rescue nil%> />
+                     <% if nm.present? %>
+              <label class="nowrap" for="<%= label %>"> <%= nm %> </label>
+              <% end %>
+            </div>
+          </div>
+          <%end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% end %>
+
+
+ <div class="item">
+            
+        
+    <a class="active title">
+      <i class="dropdown icon"></i>
+       Sizes & Colors 
+    </a>
+    
+    <div class="content menu">
+      <div class="ui form item">
+          <% Spree::OptionValue.all.each do |option_value| %>
+        <div class="grouped inline fields">
+          <div class="field">
+            <div class="ui checkbox size_filter">
+              <input type="checkbox"
+                     id="<%= option_value.id %>"
+                     class = "variants_filter"
+                     name="variants_filter"
+                     value="<%= option_value.id %>"
+                     
+                     <%= params[:search][:variant] && params[:search][:variant].include?(option_value.id.to_s) ? "checked" : "" rescue nil%> />
+              <label class="nowrap" for="<%= option_value.id %>"> <%= option_value.presentation %> </label>
+         
+            </div>
+          </div>
+        
+        </div>
+          <% end %>
+      </div>
+    </div>
+  </div>
+
+
+
+
+ <div class="item">
+            
+        
+    <a class="active title">
+      <i class="dropdown icon"></i>
+       Gender Properties 
+    </a>
+    
+    <div class="content menu">
+      <div class="ui form item">
+         
+        <div class="grouped inline fields">
+          <%  Spree::ProductProperty.group(:value).each do |product_property| %>
+           <% if product_property.value=="Men's"   %>
+          <div class="field">
+            <div class="ui checkbox product_property_filter">
+              
+              <input type="checkbox"
+                     id="<%= Spree::ProductProperty.where(:value=>"Men's").map(&:id)*"," %>"
+                     class = "product_property_filter"
+                     name="product_property_filter"
+                     value="<%= product_property.id %>"
+                     
+                     <%= params[:search][:product_property] && params[:search][:product_property].include?(Spree::ProductProperty.where(:value=>"Men's").map(&:id)*",") ? "checked" : "" rescue nil%> />
+              <label class="nowrap" for="<%= product_property.id %>"> <%= product_property.value %> </label>
+           
+             
+            </div>
+          </div>
+
+  <% elsif product_property.value =="Women's" %>
+    <div class="field">
+            <div class="ui checkbox product_property_filter">
+              <input type="checkbox"
+                     id="<%= Spree::ProductProperty.where(:value=>"Women's").map(&:id)*"," %>"
+                     class = "product_property_filter"
+                     name="product_property_filter"
+                     value="<%= product_property.id %>"
+                     
+                     <%= params[:search][:product_property] && params[:search][:product_property].include?(Spree::ProductProperty.where(:value=>"Women's").map(&:id)*",") ? "checked" : "" rescue nil%> />
+              <label class="nowrap" for="<%= product_property.id %>"> <%= product_property.value %> </label>
+</div>
+</div>
+           <% end %>
+         <% end %>
+        </div>
+         
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+                  
+<%#= render :partial => 'spree/shared/filters' %>
+
+         
+      
+   
+
+
+  </div>
+
+
+
+<div class="ui four items">
+  <% @products.each do |product| %>
+
+  <div class="item event">
+    <div class="image">
+      <img src="<%= product.images[0].attachment.url(:original) %>">
+      <a class="star ui corner label">
+        <i class="star icon"></i>
+      </a>
+      <div class="ui dimmer">
+    <div class="content ">
+      <div class="center">
+        <h2 class="ui inverted icon header">
+          <i class="icon circular inverted emphasized red heart"></i>
+          
+          <a class="link" src="<%= product.images[0].attachment.url(:product) %>" id="<%= product.variants.map(&:id)*"," %>" variant="<%= product.master.id %>" productname="<%=product.name %>" productdescription="<%= product.description %>" productprice="<%= product.price %>" largeimg="<%= product.images[0].attachment.url(:large) %>" productcurrecy="<%= product.currency %>">Quick View..!</a>
+        </h2>
+      </div>
+    </div>
+  </div>
+    </div>
+    <div class="content product_details" url="<%= product_url(product, :taxon_id => @taxon.try(:id)) %>">
+      <div class="product_url">
+       <% url = product_url(product, :taxon_id => @taxon.try(:id)) %>
+      </div>
+      <div class="name">$<%= product.price %></div>
+     <a id="<%= product.variants.map(&:id)*"," %>" class="variant"> </a>
+      <a class="link" src="<%= product.images[0].attachment.url(:product) %>" id="<%= product.variants.map(&:id)*"," %>" variant="<%= product.master.id %>" productname="<%=product.name %>" productdescription="<%= product.description %>" productprice="<%= product.price %>" largeimg="<%= product.images[0].attachment.url(:large) %>" productcurrecy="<%= product.currency %>"></a>
+      <div class="name"><%= product.name %></div>
+      <p class="description" style="display:none;"><%= product.description %></p>
+    </div>
+  </div>
+ <% end %>
+</div>
+
+
+</div>
+
+  
+
+
+
+
+
+
+
+
+
+
+<script>
+
+$(document).ready(function() {
+   $("a.link").bind('click', function() {
+      $('.test.modal')
+        .modal('show')
+      ;
+
+      var image_src = $(this).attr("src");
+      var largeimg_src = $(this).attr("largeimg");
+      //alert(image_src);
+      var variants = $(this).attr("id").split(',');
+     // alert(image_src);
+     // alert(variants);
+$('#variants_list').empty();
+//alert(variants.length);
+if (variants.length > 1)
+{
+for (var i=0,len=variants.length; i<len; i++)
+{ 
+//radio('sex', '0', variants[i]);
+add("radio",variants[i],"variants_list");
+}
+}
+else
+{
+  var variant_id = $(this).attr("variant")
+ // alert(variant_id);
+$('#variant_id').attr("value",variant_id)
+
+}
+    
+    function add(type,value,name) {
+ 
+    //Create an input type dynamically.
+    var element = document.createElement("input");
+ 
+    //Assign different attributes to the element.
+    element.setAttribute("type", type);
+    element.setAttribute("value", value);
+    element.setAttribute("name", name);
+    element.setAttribute("checked", true);
+ 
+    var foo = document.getElementById("variants_list");
+ 
+    //Append the element in page (in span).
+    foo.appendChild(element);
+ 
+}
+
+
+
+$('.header.modal.name').html($(this).attr("productname"));
+$('.modal.product.description').html($(this).attr("productdescription"))
+$('.modal.product.price').html($(this).attr("productprice"))
+$('.modal.product.currency').html($(this).attr("productcurrecy"))
+$("#zoom_01").attr("src",image_src);
+$('#zoom_01').attr("data-zoom-image",largeimg_src)
+//$("#show img").attr("data-zoom-image",image_src);
+
+//$("#zoom_01").elevateZoom({tint:true, tintColour:'#F90', tintOpacity:10});
+$("#zoom_01").elevateZoom({zoomWindowPosition: "zoom",easing:true});
+   });
+
+
+
+  });
+
+$('.event .image')
+  .dimmer({
+    on: 'hover',
+   closable: false,  
+    debug: false
+  })
+;
+
+
+$('.ui.checkbox')
+  .checkbox()
+;
+
+$(".launch.button").mouseenter(function(){
+    $(this).stop().animate({width: '215px'}, 300, 
+             function(){$(this).find('.text').show();});
+  }).mouseleave(function (event){
+    $(this).find('.text').hide();
+    $(this).stop().animate({width: '70px'}, 300);
+  });
+$(".ui.overlay.sidebar").sidebar({overlay: true})
+                .sidebar('attach events','.ui.launch.button');
+
+
+$('.content.product_details').on("click",function(){
+
+var url = $(this).attr("url");
+window.location.href = url;
+
+});
+
+
+var children_params ="<%= params[:children] rescue nil%>" ;
+var category_filter ="<%= params[:search][:category_filter] rescue nil %>" ;
+var brand_array_any = "<%= params[:search][:brand_array_any] rescue nil %>"
+var variants_filter = "<%= params[:search][:variant] rescue nil %>"
+var product_property = "<%= params[:search][:product_property] rescue nil %>"
+var keywords = "<%= params[:keywords]%>"
+
+
+$('.ui.checkbox.category_filter').on("click",function(){
+  //alert("hi")
+var inputs = document.getElementsByTagName("input"); 
+var checks = [];
+var radios = [];
+//var children_params ="<%= params[:children] rescue nil %>" ;
+
+for (var i = 0; i < inputs.length; i++) {  
+  //alert(inputs[i].name);
+  if ((inputs[i].type == "radio" || inputs[i].type == "checkbox") && inputs[i].checked && inputs[i].name == "category_name" ) { 
+  //alert(inputs[i].value); 
+    checks.push(inputs[i].value); 
+    if  (inputs[i].placeholder)
+    {
+     var children = inputs[i].placeholder 
+   } 
+     //var children = inputs[i].placeholder 
+  }  
+  
+}
+if(children)
+{
+
+
+}
+ else
+{
+  children = '';
+}
+
+//alert("radios");
+//alert(radios);  
+//alert(checks);
+//alert(checks);
+
+
+var url = "/products?utf8=✓&search[category_filter]=" + checks + "&children=" + children + "&search[brand_array_any]=" + brand_array_any  + "&search[variant]=" + variants_filter + "&search[product_property]=" + product_property + "&keywords=" + keywords
+$.ajax({
+                
+                url: url ,
+                data: {},                            
+                success: function(result)
+                {      
+//alert("success");
+                window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
+              $('#dimmer_id').show();
+              var intervalId = setInterval(function() {
+                      $('#dimmer_id').hide();
+                      $('#products').replaceWith(result);
+                      clearInterval(intervalId);
+                      }, 2000);
+                  //  alert("sucecc")
+                   // window.location.assign(url);
+                     // $('#wrapper').replaceWith(result);
+                      //window.location.assign(url);  
+ //$('#products').replaceWith(result); 
+                }, 
+                error: function()
+                {
+                  //  alert("error");
+                }
+            });
+
+
+
+
+
+});
+
+
+
+
+$('.ui.checkbox.brand_filter').on("click",function(){
+
+var inputs = document.getElementsByTagName("input"); 
+var checks = [];
+var radios = [];
+//var children_params ="<%= params[:children] %>" ;
+//var category_filter ="<%= params[:search][:category_filter] rescue nil %>" ;
+for (var i = 0; i < inputs.length; i++) {  
+  //alert(inputs[i].name);
+  if ((inputs[i].type == "radio" || inputs[i].type == "checkbox") && inputs[i].checked && inputs[i].name == "brand_filter" ) { 
+   // alert("inside")
+  //alert(inputs[i].value); 
+      checks.push(inputs[i].value);  
+     var brand =inputs[i].value
+  }  
+  
+}
+//alert("brand");
+//alert(checks)
+url="/products?utf8=✓&search[brand_array_any]=" + checks + "&search[category_filter]=" + category_filter + "&search[variant]=" + variants_filter + "&search[product_property]=" + product_property + "&children=" + children_params + "&keywords=" + keywords
+$.ajax({
+                
+                url: url,
+                data: {},                            
+                success: function(result)
+                {      
+//alert("success");
+                window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
+              //$('#dimmer_id').show();
+              //var intervalId = setInterval(function() {
+                    //  $('#dimmer_id').hide();
+                     // $('#wrapper').replaceWith(result);
+                     // clearInterval(intervalId);
+                    //  }, 2000);
+                  //  alert("sucecc")
+                   // window.location.assign(url);
+                     // $('#wrapper').replaceWith(result);
+                      //window.location.assign(url);  
+ $('#dimmer_id').show();
+              var intervalId = setInterval(function() {
+                      $('#dimmer_id').hide();
+                      $('#products').replaceWith(result);
+                      clearInterval(intervalId);
+                      }, 2000);
+
+
+
+                }, 
+                error: function()
+                {
+                  //  alert("error");
+                }
+            });
+
+
+
+});
+
+
+$('.ui.checkbox.size_filter').on("click",function(){
+
+var inputs = document.getElementsByTagName("input"); 
+var checks = [];
+for (var i = 0; i < inputs.length; i++) {  
+  //alert(inputs[i].name);
+  if (inputs[i].name == "variants_filter" && inputs[i].type == "checkbox" && inputs[i].checked) { 
+  //alert(inputs[i].value); 
+    checks.push(inputs[i].id);  
+  }  
+}  
+
+url="/products?utf8=✓&search[variant]=" + checks + "&search[category_filter]=" + category_filter + "&search[brand_array_any]=" + brand_array_any + "&children=" + children_params + "&search[product_property]=" + product_property + "&keywords=" + keywords
+$.ajax({
+                
+                url: url,
+                data: {},                            
+                success: function(result)
+                {      
+//alert("success");
+                window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
+              //$('#dimmer_id').show();
+              //var intervalId = setInterval(function() {
+                    //  $('#dimmer_id').hide();
+                     // $('#wrapper').replaceWith(result);
+                     // clearInterval(intervalId);
+                    //  }, 2000);
+                  //  alert("sucecc")
+                   // window.location.assign(url);
+                     // $('#wrapper').replaceWith(result);
+                      //window.location.assign(url);  
+ $('#dimmer_id').show();
+              var intervalId = setInterval(function() {
+                      $('#dimmer_id').hide();
+                      $('#products').replaceWith(result);
+                      clearInterval(intervalId);
+                      }, 2000);
+                }, 
+                error: function()
+                {
+                  //  alert("error");
+                }
+            });
+
+
+
+});
+
+
+
+
+$('.ui.checkbox.product_property_filter').on("click",function(){
+alert("dd");
+var inputs = document.getElementsByTagName("input"); 
+var checks = [];
+for (var i = 0; i < inputs.length; i++) {  
+  if (inputs[i].name == "product_property_filter" && inputs[i].type == "checkbox" && inputs[i].checked) { 
+  //alert(inputs[i].id); 
+    checks.push(inputs[i].id);  
+  }  
+}  
+
+url="/products?utf8=✓&search[product_property]=" + checks + "&search[category_filter]=" + category_filter + "&search[brand_array_any]=" + brand_array_any +  "&children=" + children_params + "&keywords=" + keywords
+$.ajax({
+                
+                url: url,
+                data: {},                            
+                success: function(result)
+                {      
+//alert("success");
+                window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
+              //$('#dimmer_id').show();
+              //var intervalId = setInterval(function() {
+                    //  $('#dimmer_id').hide();
+                     // $('#wrapper').replaceWith(result);
+                     // clearInterval(intervalId);
+                    //  }, 2000);
+                  //  alert("sucecc")
+                   // window.location.assign(url);
+                     // $('#wrapper').replaceWith(result);
+                      //window.location.assign(url);  
+ $('#dimmer_id').show();
+              var intervalId = setInterval(function() {
+                      $('#dimmer_id').hide();
+                      $('#products').replaceWith(result);
+                      clearInterval(intervalId);
+                      }, 2000);
+                }, 
+                error: function()
+                {
+                  //  alert("error");
+                }
+            });
+
+
+
+});
+
+
+$(".high_to_low").bind('click', function() {
+url="/products?utf8=✓&search[product_property]=" + product_property + "&search[category_filter]=" + category_filter + "&search[brand_array_any]=" + brand_array_any +  "&children=" + children_params + "&high_to_low=high_to_low" + "&keywords=" + keywords
+
+//alert("hi");
+  $.ajax({
+                url: url,
+                data: {},                      
+                success: function(result)
+                {      
+window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
+                //alert(result)
+                    //alert("sucecc")
+                   // window.location.assign(url);
+                       $('#dimmer_id').show();
+              var intervalId = setInterval(function() {
+                      $('#dimmer_id').hide();
+                      $('#products').replaceWith(result);
+                      clearInterval(intervalId);
+                      }, 2000);
+
+                }, 
+                error: function()
+                {
+                  //  alert("error");
+                }
+            });
+
+});
+
+
+$(".low_to_high").bind('click', function() {
+
+url="/products?utf8=✓&search[product_property]=" + product_property + "&search[category_filter]=" + category_filter + "&search[brand_array_any]=" + brand_array_any +  "&children=" + children_params + "&low_to_high=low_to_high" + "&keywords=" + keywords
+  $.ajax({
+                url: url,
+                data: {},                      
+                success: function(result)
+                {      
+//alert(result)
+                 window.history.pushState({"html":result.html,"pageTitle":"Spree"},"", url);
+                    //alert("sucecc")
+                   // window.location.assign(url);
+                       $('#dimmer_id').show();
+              var intervalId = setInterval(function() {
+                      $('#dimmer_id').hide();
+                      $('#products').replaceWith(result);
+                      clearInterval(intervalId);
+                      }, 2000); 
+
+                }, 
+                error: function()
+                {
+                  //  alert("error");
+                }
+            });
+
+});
+
+
+$('.accordion')
+  .accordion()
+;
+$('.vertical.sidebar')
+  .sidebar('toggle')
+;
+
+
+
+
+$('.right.attached.button').on("click",function(){
+
+$('.accordion')
+  .accordion()
+;
+$('.vertical.sidebar')
+  .sidebar('toggle')
+;
+
+});
+</script>
+
+
+
+<script type="text/javascript">
+
+
+
+
+
+
+$("#add_to_cart").bind('click', function() {
+//alert("helo");
+var inputs = document.getElementsByTagName("input"); 
+var checks = [];
+var radios = [];
+for (var i = 0; i < inputs.length; i++) {  
+  //alert(inputs[i].name);
+  if (inputs[i].type == "radio" && inputs[i].name == "variants_list" && inputs[i].checked) { 
+  alert(inputs[i].value); 
+    var variant_radio_id =   inputs[i].value;
+  }
+ }
+
+if (variant_radio_id)
+ {
+   // alert("else")
+var variant_id =   variant_radio_id ;
+  }  
+else
+{
+
+  var variant_id =   $('#variant_id').val(); 
+}
+
+//alert("variant_id");
+//alert(variant_id);
+
+
+if ($('#quantity').val())
+{
+
+  var quantity = $('#quantity').val();
+
+}
+else
+{
+quantity = "1"
+
+}
+
+
+
+  $.ajax({
+                type: 'POST',
+                url: "/orders/populate",
+                data: {variant_id: variant_id, quantity: quantity},                      
+                success: function(result)
+                {      
+
+                
+                    //alert("sucecc")
+                   // window.location.assign(url);
+                     // $('#wrapper').replaceWith(result);  
+
+                }, 
+                error: function()
+                {
+                  //  alert("error");
+                }
+            });
+
+});
+
+
+
+
+
+
+
+</script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36251023-1']);
+  _gaq.push(['_setDomainName', 'jqueryscript.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+
+<script>
+function radio(name, value, text) {
+  //alert(name)
+  //alert(value)
+  //alert(text)
+var element = document.createElement("input");
+var id = name + value;
+element.setAttribute('type', 'radio');
+element.setAttribute('value', value);
+element.setAttribute('name', name); 
+element.setAttribute('id', id);
+var foo = document.getElementsByClassName("variants_list");
+//alert(element);
+foo.appendChild(element);
+var newlabel2 = document.createElement("label"); 
+newlabel2.setAttribute('for', id);
+newlabel2.innerHTML = text;
+foo.appendChild(newlabel2);
+}
+
+//radio('sex', '1', 'female');
+
+
+
+
+
+
+
+
+
+</script>
+
+

@@ -1,10 +1,13 @@
 Spree::BaseHelper.class_eval do
    def taxons_tree(root_taxon, current_taxon,max_level = 1,products)
        return '' if max_level < 1 || root_taxon.children.empty?
-      content_tag :ul, class: 'taxons-list' do
+      content_tag :div, class: 'grouped inline fields' do
+       
         root_taxon.children.map do |taxon|
           css_class = (current_taxon && current_taxon.self_and_ancestors.include?(taxon)) ? 'current' : nil
-          content_tag :li, class: css_class do
+          content_tag :div, class: 'field' do
+          content_tag :div, class: "ui radio checkbox category_filter" do
+
             product_ids = products.map(&:id) rescue nil
            taxon_product_ids = taxon.products.map(&:id) rescue nil
           if taxon.children.present?
@@ -24,11 +27,101 @@ Spree::BaseHelper.class_eval do
            end 
          end
            end
-           link_to("#{taxon.name}" + "(" +"#{@tax_product_count.count}" + ")", "/products" + "?id=#{taxon.id}&search_params=#{@taxon_category_ids.present? ? @taxon_category_ids : taxon.id.to_i  }&search[price_range_any]=#{session[:sunpot_price_new_range] rescue nil}&search[brand_any]=#{session[:sunpot_brand_any] rescue nil}&keywords=#{params[:keywords]}&search[price_with_slider]=#{params[:search][:price_with_slider] rescue nil}&low_to_high=#{params[:low_to_high] rescue nil}&high_to_low=#{params[:high_to_low] rescue nil}"  ,:class=>"taxon_class",:disabled => true) +
-           taxons_tree(taxon, current_taxon, max_level - 1,products)
+          
+if taxon.children.present?
+
+           if params[:search].present? && params[:search][:category_filter].present?
+          
+            
+          (radio_button_tag 'category_name', "#{taxon.id}", params[:search][:category_filter].include?(taxon.id.to_s) ? true : false, class: '',placeholder: "#{(taxon.children.map(&:id) << taxon.id )*","}" ) + (label_tag 'name', "#{taxon.name}" + "(" +"#{@tax_product_count.count}" + ")") 
+else
+  # (check_box_tag 'category_name', "#{taxon.id}",false, class: 'category_filter') + (label_tag 'name', "#{taxon.name}" + "(" +"#{@tax_product_count.count}" + ")") 
+   (radio_button_tag 'category_name', taxon.id,false, class: 'ui radio checkbox category_filter',placeholder: "#{(taxon.children.map(&:id) << taxon.id )*","}" ) + (label_tag 'name', "#{taxon.name}" + "(" +"#{@tax_product_count.count}" + ")") 
+end
+
+
+else
+
+ if params[:search].present? && params[:search][:category_filter].present?
+                    
+          (radio_button_tag 'category_name', "#{taxon.id}", params[:search][:category_filter].include?(taxon.id.to_s) ? true : false, class: 'ui radio checkbox category_filter') + (label_tag 'name', "#{taxon.name}" + "(" +"#{@tax_product_count.count}" + ")") 
+else
+  # (check_box_tag 'category_name', "#{taxon.id}",false, class: 'category_filter') + (label_tag 'name', "#{taxon.name}" + "(" +"#{@tax_product_count.count}" + ")") 
+   (radio_button_tag 'category_name', taxon.id,false, class: 'ui radio checkbox category_filter',parent: 'yes') + (label_tag 'name', "#{taxon.name}" + "(" +"#{@tax_product_count.count}" + ")") 
+end
+
+end
+
+end
 
           end
         end.join("\n").html_safe
       end
-   end
+    end
+    
+  
 end
+
+
+
+def taxons_tree_brand(root_taxon, current_taxon,max_level = 1,products)
+       return '' if max_level < 1 || root_taxon.children.empty?
+      content_tag :div, class: 'grouped inline fields' do
+       
+        root_taxon.children.map do |taxon|
+          css_class = (current_taxon && current_taxon.self_and_ancestors.include?(taxon)) ? 'current' : nil
+          content_tag :div, class: 'field' do
+          content_tag :div, class: "ui checkbox category_filter" do
+
+            product_ids = products.map(&:id) rescue nil
+           taxon_product_ids = taxon.products.map(&:id) rescue nil
+          if taxon.children.present?
+           taxon_product_ids =taxon.children.includes(:products).map(&:products).
+                                  flatten.compact.uniq.map(&:id)
+            product_ids = product_ids & taxon.children.includes(:products).map(&:products).
+                                  flatten.compact.uniq.map(&:id)
+          end
+
+
+
+           @tax_product_count = []
+           taxon_product_ids.each do |tax_pro|
+            if product_ids.present?
+           if product_ids.include?(tax_pro)
+           @tax_product_count << tax_pro
+           end 
+         end
+           end
+          
+if taxon.children.present?
+
+           if params[:search].present? && params[:search][:category_filter].present?
+          
+            
+          (check_box_tag 'category_name', "#{taxon.id}", params[:search][:category_filter].include?(taxon.id.to_s) ? true : false, class: '',placeholder: "#{(taxon.children.map(&:id) << taxon.id )*","}" ) + (label_tag 'name', "#{taxon.name}" + "(" +"#{@tax_product_count.count}" + ")") 
+else
+  # (check_box_tag 'category_name', "#{taxon.id}",false, class: 'category_filter') + (label_tag 'name', "#{taxon.name}" + "(" +"#{@tax_product_count.count}" + ")") 
+   (check_box_tag 'category_name', taxon.id,false, class: 'ui  checkbox category_filter',placeholder: "#{(taxon.children.map(&:id) << taxon.id )*","}" ) + (label_tag 'name', "#{taxon.name}" + "(" +"#{@tax_product_count.count}" + ")") 
+end
+
+
+else
+
+ if params[:search].present? && params[:search][:category_filter].present?
+                    
+          (check_box_tag 'category_name', "#{taxon.id}", params[:search][:category_filter].include?(taxon.id.to_s) ? true : false, class: 'ui checkbox category_filter') + (label_tag 'name', "#{taxon.name}" + "(" +"#{@tax_product_count.count}" + ")") 
+else
+  # (check_box_tag 'category_name', "#{taxon.id}",false, class: 'category_filter') + (label_tag 'name', "#{taxon.name}" + "(" +"#{@tax_product_count.count}" + ")") 
+   (check_box_tag 'category_name', taxon.id,false, class: 'ui checkbox category_filter',parent: 'yes') + (label_tag 'name', "#{taxon.name}" + "(" +"#{@tax_product_count.count}" + ")") 
+end
+
+end
+
+end
+
+          end
+        end.join("\n").html_safe
+      end
+    end
+    
+  
