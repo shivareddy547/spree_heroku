@@ -48,6 +48,7 @@ gem "therubyracer"
 gem "less-rails"
 gem "twitter-bootstrap-rails"
 gem 'heroku-rake'
+gem 'heroku'
 #gem 'spree_ajax_add_to_cart', :git => 'http://github.com/joneslee85/spree_ajax_add_to_cart.git'
 #gem 'spree_ajax_cart', :git => 'http://github.com/pogodan/spree_ajax_cart'
 #gem 'spree_ajax_add_to_cart' , :git => 'http://github.com/suryart/spree_ajax_add_to_cart.git',:branch=>'master'
